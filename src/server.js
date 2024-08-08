@@ -46,9 +46,7 @@ app.post("/convert", async (req, res) => {
 
     let wrappedJsCode = `
       (function() {
-        global.exports.compressWord = function compressWord(a, b) {
-          return a + b;
-        }
+        ${jsCode.replace(/function\s+(\w+)/g, "global.exports.$1 = function $1")}
       })();
     `;
 
@@ -161,6 +159,30 @@ app.post("/compile", (req, res) => {
 
     const wasmCode = fs.readFileSync(wasmFile);
     res.json({ wasmCode: wasmCode.toString("base64") });
+  });
+});
+
+// 비교를 위해 자바스크립트와 WebAssembly 함수를 실행하고 성능을 측정하는 엔드포인트 추가
+app.post("/compare", (req, res) => {
+  const { jsCode, jsCall, wasmCode } = req.body;
+
+  const startTimeJS = process.hrtime.bigint();
+  eval(`${jsCode}; ${jsCall};`);
+  const endTimeJS = process.hrtime.bigint();
+
+  const wasmModule = new WebAssembly.Module(Buffer.from(wasmCode, "base64"));
+  const wasmInstance = new WebAssembly.Instance(wasmModule, {});
+
+  const startTimeWASM = process.hrtime.bigint();
+  wasmInstance.exports[jsCall.split("(")[0]](...JSON.parse(`[${jsCall.split("(")[1].replace(")", "")}]`));
+  const endTimeWASM = process.hrtime.bigint();
+
+  const jsExecutionTime = endTimeJS - startTimeJS;
+  const wasmExecutionTime = endTimeWASM - startTimeWASM;
+
+  res.json({
+    jsExecutionTime: jsExecutionTime.toString(),
+    wasmExecutionTime: wasmExecutionTime.toString(),
   });
 });
 
