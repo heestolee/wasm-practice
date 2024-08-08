@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASM Performance Analyzer</title>
+</head>
+<body>
+    <textarea id="js-code" rows="10" cols="50" placeholder="Enter your JavaScript function here"></textarea>
+    <br>
+    <textarea id="js-call" rows="2" cols="50" placeholder="Enter your function call here"></textarea>
+    <br>
+    <button id="convert-test">Convert and Test</button>
+    <h3>AssemblyScript Code</h3>
+    <pre id="as-output"></pre>
+    <h3>WebAssembly Code</h3>
+    <pre id="wasm-output"></pre>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
