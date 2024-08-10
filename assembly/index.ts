@@ -1,4 +1,4 @@
-export function compressWord(a: string, b: string): string {
+function compressWord(a: string, b: string): string {
   
   return a + b;
 
